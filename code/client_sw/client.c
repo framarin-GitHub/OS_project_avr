@@ -3,7 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
-#include "./serial_linux.h"
+#include "./serial_communication/serial_linux.h"
+#include "./read_write_serial.h"
 #define HANDLE_ERROR(msg,err) \
 	do{ \
 	perror(msg); \
@@ -16,22 +17,20 @@ int main(){
   //general settings
   const char* serial_device = "/dev/ttyACM0";
   int baudrate = 19200;
-  int read_or_write = 1; // 1 read 0 write
   
-  int fd = 0; serialOpen(serial_device);
+  int fd = serialOpen(serial_device);
   serialSetInterfaceAttribs(fd, baudrate, 0);
   serialSetBlocking(fd, 1);
+  printf("serial initialized\n");
   
-  printf("in place\n");
+  char char_read;
   int i = 0;
-  while(i < 4) {
-    char buf[1024];
-    memset(buf, 0, 1024);
-      int nchars=read(fd, buf,2);
-      printf("%s \n", buf);
-      i++;
-      usleep(50);
-  }
-  
+  while(i<9){
+  char char_read = getCharSerial(fd);
+   	printf("%c", char_read);
+   	usleep(50);
+   	i++;
+   }
+  close(fd);
   
 }

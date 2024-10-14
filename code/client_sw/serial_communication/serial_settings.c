@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <termios.h>
-#include "./serial_linux.h"
+#include "./serial_settings.h"
 #define HANDLE_ERROR(msg,err) \
 	do{ \
 	perror(msg); \
@@ -46,10 +46,10 @@ void serialSetInterfaceAttribs(int fd, int speed, int parity) {
   cfsetispeed (&tty, speed);
   // sets "raw" mode
   cfmakeraw(&tty);
-  // enable reading
-  tty.c_cflag &= ~(PARENB | PARODD); // shut off parity
-  tty.c_cflag |= parity;
-  tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8; // 8-bit chars
+  tty.c_cflag |= (CREAD | CLOCAL); //enable receiver and ignore modem control
+  tty.c_cflag &= ~CSIZE; //char size mask values cs5-8
+  tty.c_cflag |=  CS8; //uno soltanto dei cs deve essere attivo e lo fanno ll.30-31
+  tty.c_cflag &= ~CRTSCTS; //enable rts/cts hardware
 
   // sets the changes now
   if (tcsetattr (fd, TCSANOW, &tty) != 0) HANDLE_ERROR("error from tcsetattr \n", errno);
@@ -69,7 +69,7 @@ void serialSetBlocking(int fd, int should_block) {
 }
 
 int serialOpen(const char* name) {
-  int fd = open (name, O_RDWR | O_NOCTTY | O_SYNC );
+  int fd = open(name, O_RDWR | O_NOCTTY | O_SYNC );
   if (fd < 0) HANDLE_ERROR("error opening serial, fd \n", errno);
   return fd;
 }
