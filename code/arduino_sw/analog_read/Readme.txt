@@ -1,3 +1,5 @@
+int analogRead(uint8_t pin);
+
 analogRead uses 3 registers: 1)ADMUX;2)ADCSRA3)ADCSRB.
 1)
   bits REFS1==0 and REFS0==1, setting the voltage reference to AVcc;
