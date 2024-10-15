@@ -3,8 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
-#include "./serial_communication/serial_linux.h"
-#include "./read_write_serial.h"
+#include "./serial_communication/serial_settings.h"
+#include "./serial_communication/read_write_serial.h"
 #define HANDLE_ERROR(msg,err) \
 	do{ \
 	perror(msg); \
@@ -22,15 +22,15 @@ int main(){
   serialSetInterfaceAttribs(fd, baudrate, 0);
   serialSetBlocking(fd, 1);
   printf("serial initialized\n");
-  
-  char char_read;
-  int i = 0;
-  while(i<9){
-  char char_read = getCharSerial(fd);
-   	printf("%c", char_read);
-   	usleep(50);
-   	i++;
-   }
+  char to_send[1024] = "we send data via serial"; 
+  char rec[1024];
+  memset(rec, 0, 1024);
+  while(1){
+  readSerial(fd,rec);
+  printf("%s\n", rec);
+  usleep(4999);
+  writeSerial(fd,to_send);
+  }
   close(fd);
   
 }

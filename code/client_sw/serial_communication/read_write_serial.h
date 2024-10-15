@@ -1,3 +1,5 @@
 #pragma once  
 
-char getCharSerial(int fd);
+char readSerial(int fd, char* buf);
+
+void writeSerial(int fd, char* to_send);
