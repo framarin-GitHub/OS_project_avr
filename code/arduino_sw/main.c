@@ -8,13 +8,10 @@ int main(void){
   // this initializes the printf/uart thingies
   printf_init();
   UART_init();
-  
-  
-  
-  /*
-  while(1){
-    int res = analogRead(0);
-    printf("we read A0 = %d \n", res);
-    _delay_ms(500);
-  }*/
+  UART_putString((uint8_t*)"connection opened\n");
+  uint8_t buf[1024];
+  while(1) {
+    UART_getString(buf);
+    UART_putString((uint8_t*)"received\n");
+  }
 }

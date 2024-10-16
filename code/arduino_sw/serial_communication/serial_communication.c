@@ -33,7 +33,7 @@ uint8_t UART_getChar(void){
     
 }
 
-// reads a string until the first newline or 0
+// reads a string until the first newline
 // returns the size read
 uint8_t UART_getString(uint8_t* buf){
   uint8_t* b0=buf; //beginning of buffer
@@ -41,9 +41,6 @@ uint8_t UART_getString(uint8_t* buf){
     uint8_t c=UART_getChar();
     *buf=c;
     ++buf;
-    // reading a 0 terminates the string
-    if (c==0)
-      return buf-b0;
     // reading a \n  or a \r return results
     // in forcedly terminating the string
     if(c=='\n'||c=='\r'){
@@ -60,15 +57,3 @@ void UART_putString(uint8_t* buf){
     ++buf;
   }
 }
-/*
-#define MAX_BUF 256
-int main(void){
-  UART_init();
-  UART_putString((uint8_t*)"write something, i'll repeat it\n");
-  uint8_t buf[MAX_BUF];
-  while(1) {
-    UART_getString(buf);
-    UART_putString((uint8_t*)"received\n");
-    UART_putString(buf);
-  }
-}*/

@@ -14,23 +14,24 @@
 
 
 int main(){
-  //general settings
+  // Serial initialization
   const char* serial_device = "/dev/ttyACM0";
   int baudrate = 19200;
-  
   int fd = serialOpen(serial_device);
   serialSetInterfaceAttribs(fd, baudrate, 0);
   serialSetBlocking(fd, 1);
   printf("serial initialized\n");
-  char to_send[1024] = "we send data via serial"; 
+  
+  
+  char to_send[1024] = "we send data via serial\n"; 
   char rec[1024];
   memset(rec, 0, 1024);
-  while(1){
+  
+  readSerial(fd,rec); // reads empty at the beginning
+  printf("%s\n", rec);
+  writeSerial(fd,to_send);
   readSerial(fd,rec);
   printf("%s\n", rec);
-  usleep(4999);
-  writeSerial(fd,to_send);
-  }
   close(fd);
   
 }

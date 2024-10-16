@@ -1,10 +1,15 @@
-This is an example of using the serial port
-in polling mode
+-void UART_init();
 
-Three routines:
-UART_init(): initializes the UART (19200)
-UART_putChar(uint8_t): waits for the uart to be free and writes a character
-UART_getChar(): blocking, waits for an input to be available
+  initializes the UART
 
-The program implements a simple serial echo
-Use a serial terminal, and write something
+
+-uint8_t UART_getString(uint8_t* buf);
+
+UART_getString reads until '\n' or '\r' from serial one char at time, based on getChar() that 
+  busy waits looping on the satus bit RXC0 of UCSR0A register to check serial input.
+
+
+-void UART_putString(uint8_t* buf);
+
+UART_putString writes on serial one char at time, based on putChar() that busy waits looping on 
+  the satus bit UDRE0 of UCSR0A register to check if any transmission is ongoing.

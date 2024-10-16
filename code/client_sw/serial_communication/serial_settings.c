@@ -49,7 +49,7 @@ void serialSetInterfaceAttribs(int fd, int speed, int parity) {
   tty.c_cflag |= (CREAD | CLOCAL); //enable receiver and ignore modem control
   tty.c_cflag &= ~CSIZE; //char size mask values cs5-8
   tty.c_cflag |=  CS8; //uno soltanto dei cs deve essere attivo e lo fanno ll.30-31
-  tty.c_cflag &= ~CRTSCTS; //enable rts/cts hardware
+  //tty.c_cflag &= ~CRTSCTS; //enable rts/cts hardware
 
   // sets the changes now
   if (tcsetattr (fd, TCSANOW, &tty) != 0) HANDLE_ERROR("error from tcsetattr \n", errno);
