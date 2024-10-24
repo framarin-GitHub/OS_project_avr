@@ -5,6 +5,7 @@
 #include <errno.h>
 #include "./serial_communication/serial_settings.h"
 #include "./serial_communication/read_write_serial.h"
+#include "./diagram_output/diagram_gnuplot.h"
 #define HANDLE_ERROR(msg,err) \
 	do{ \
 	perror(msg); \
@@ -14,6 +15,10 @@
 
 
 int main(){
+
+  plotDiag(2);
+
+
   // Serial initialization
   const char* serial_device = "/dev/ttyACM0";
   int baudrate = 19200;
