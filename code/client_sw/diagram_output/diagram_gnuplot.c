@@ -68,8 +68,3 @@ void plotDiag(int mode){
   fflush(gnuplot_pipe);
 }
 
-FILE* pipeOpen(){
-
-  return gnuplot_pipe;
-}
-
