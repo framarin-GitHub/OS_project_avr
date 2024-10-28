@@ -7,6 +7,8 @@
 #include "./serial_communication/serial_settings.h"
 #include "./serial_communication/read_write_serial.h"
 #include "./diagram_output/diagram_gnuplot.h"
+#include "./manip_data/struct_data.h"
+#include "./manip_data/read_write_data.h"
 #define HANDLE_ERROR(msg,err) \
 	do{ \
 	perror(msg); \
@@ -16,6 +18,9 @@
 
 
 int main(){
+asdasd();
+printf("did it\n");
+
 
   // Serial initialization
   const char* serial_device = "/dev/ttyACM0";
@@ -24,7 +29,7 @@ int main(){
   serialSetInterfaceAttribs(fd, baudrate, 0);
   serialSetBlocking(fd, 1);
   printf("//serial initialized ...\n");
-  
+   
   
   // CL menu cycles
   char user_input;

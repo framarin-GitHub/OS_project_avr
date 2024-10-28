@@ -4,9 +4,9 @@ AR=ar
 
 BINS=client
 
-OBJS=./serial_communication/serial_settings.o ./serial_communication/read_write_serial.o client.o ./diagram_output/diagram_gnuplot.o
+OBJS=./serial_communication/serial_settings.o ./serial_communication/read_write_serial.o client.o ./diagram_output/diagram_gnuplot.o ./manip_data/struct_data.o ./manip_data/read_write_data.o
 
-HEADERS=./serial_communication/serial_settings.h ./serial_communication/read_write_serial.h ./diagram_output/diagram_gnuplot.h
+HEADERS=./serial_communication/serial_settings.h ./serial_communication/read_write_serial.h ./diagram_output/diagram_gnuplot.h ./manip_data/struct_data.h ./manip_data/read_write_data.h
 
 LIBS=
 

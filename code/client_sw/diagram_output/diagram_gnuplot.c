@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include "./diagram_gnuplot.h"
 void initGnuplot(int mode, FILE* gnuplot_pipe){
   char title[200];
   char xrange[200];
