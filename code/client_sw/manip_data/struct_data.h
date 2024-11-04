@@ -5,7 +5,7 @@ typedef struct {
   int value;  
 } ts_data;
 
-ts_data* createTsData(int value);
+ts_data* createTsData(int value, time_t ts);
 
 void deleteTsData(ts_data* del);
 

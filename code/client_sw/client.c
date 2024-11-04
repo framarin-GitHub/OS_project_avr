@@ -14,14 +14,17 @@
 	perror(msg); \
 	exit(err); \
 	} while(0)
-
+#define HANDLE_ERROR_ERRNO(msg) \
+	do{ \
+	errno = 11;\
+	perror(msg); \
+	exit(11); \
+	} while(0)
 
 
 int main(){
-asdasd();
-printf("did it\n");
-
-
+  // Initialize data structures from data files
+  initData();
   // Serial initialization
   const char* serial_device = "/dev/ttyACM0";
   int baudrate = 19200;

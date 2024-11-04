@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include "./struct_data.h"
 
-ts_data* createTsData(int value){
+ts_data* createTsData(int value, time_t ts){
   ts_data* res = (ts_data*)calloc(1, sizeof(ts_data));
   res->value = value;
-  res->timestamp = time(NULL);
+  if(ts == -1)
+    res->timestamp = time(NULL);
+  else
+    res->timestamp = ts;
   return res;
 }
 

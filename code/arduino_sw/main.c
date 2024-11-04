@@ -18,7 +18,7 @@ int main(void){
     //converts int to string
     sprintf((char*)buf, "%d\n", value);
     UART_putString((uint8_t*) buf);
-    //works only with constant so we need a timer
+    //works only with constant so we need a timer or switch 
     _delay_ms(1*1000);
   }
 }
