@@ -11,3 +11,9 @@ createTsData, deleteTsData and getDataValue are basic oop function for the C-sty
 
 secElapsed allows to measure the interval of time between start and end measures in seconds 
   (float), wrapping difftime().
+  
+  
+  
+  
+  
+  !--->update with readme with read_write_data.h<---!

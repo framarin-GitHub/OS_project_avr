@@ -22,12 +22,11 @@
 	} while(0)
 	
 extern int alarm_flag;
+extern int fd_for_handler;
 
 int main(){
   // Initialize data structures from data files
   initData();
-  // Initialize signal handler for sigalrm
-  initSignalHandler();
   // Serial initialization
   const char* serial_device = "/dev/ttyACM0";
   int baudrate = 19200;
@@ -35,7 +34,9 @@ int main(){
   serialSetInterfaceAttribs(fd, baudrate, 0);
   serialSetBlocking(fd, 1);
   printf("//serial initialized ...\n");
-   
+  // Initialize signal handler for sigalrm
+  fd_for_handler = fd;
+  initSignalHandler();
   
   // CL menu cycles
   char user_input;
@@ -86,11 +87,11 @@ int main(){
     printf("data cleared ...\n");
     break;
   case '3':
-    printf("Insert the sampling rate(s): ");
+    printf("Insert the sampling rate 1,2,4,8 (s): ");
     int sec_interval = 0;
     scanf("%d", &sec_interval);
-    if(sec_interval == 0){
-      printf("0 is not allowed\n");
+    if(sec_interval != 1 && sec_interval != 2 && sec_interval != 4 && sec_interval != 8){
+      printf("insert a valid value\n");
       break; 
     }
     printf("Insert how long you want to measure(s): ");
@@ -104,15 +105,14 @@ int main(){
     char rec[500];
     memset(rec, 0, 500);
     // converts int to string
-    sprintf(to_send, "%d\n", sec_interval);
-    writeSerial(fd,to_send);
+    sprintf(to_send, "%d", sec_interval);
+    writeSerial(fd, to_send);   
     alarm_flag = 1;
     alarm(sec_alarm);
-    while(alarm_flag){
+    while(alarm_flag){        
       readSerial(fd,rec);
       printf("\n%s", rec);
-    }
-    
+    } 
     break;
   }
   
