@@ -20,11 +20,14 @@
 	perror(msg); \
 	exit(11); \
 	} while(0)
-
+	
+extern int alarm_flag;
 
 int main(){
   // Initialize data structures from data files
   initData();
+  // Initialize signal handler for sigalrm
+  initSignalHandler();
   // Serial initialization
   const char* serial_device = "/dev/ttyACM0";
   int baudrate = 19200;
@@ -90,13 +93,22 @@ int main(){
       printf("0 is not allowed\n");
       break; 
     }
+    printf("Insert how long you want to measure(s): ");
+    int sec_alarm = 0;
+    scanf("%d", &sec_alarm);
+    if(sec_alarm == 0){
+      printf("0 is not allowed\n");
+      break; 
+    }
     char to_send[500];
     char rec[500];
     memset(rec, 0, 500);
     // converts int to string
     sprintf(to_send, "%d\n", sec_interval);
     writeSerial(fd,to_send);
-    while(1){
+    alarm_flag = 1;
+    alarm(sec_alarm);
+    while(alarm_flag){
       readSerial(fd,rec);
       printf("\n%s", rec);
     }
