@@ -24,3 +24,6 @@ int getDataValue(ts_data* get){
   return get->value;
 }
 
+time_t getTime(){
+  return time(NULL);
+}

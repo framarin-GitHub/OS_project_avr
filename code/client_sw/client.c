@@ -7,8 +7,8 @@
 #include "./serial_communication/serial_settings.h"
 #include "./serial_communication/read_write_serial.h"
 #include "./diagram_output/diagram_gnuplot.h"
-#include "./manip_data/struct_data.h"
-#include "./manip_data/read_write_data.h"
+#include "./alarm/alarm.h"
+
 #define HANDLE_ERROR(msg,err) \
 	do{ \
 	perror(msg); \
@@ -26,7 +26,7 @@ extern int fd_for_handler;
 
 int main(){
   // Initialize data structures from data files
-  initData();
+  //initData();
   // Serial initialization
   const char* serial_device = "/dev/ttyACM0";
   int baudrate = 19200;
@@ -49,11 +49,24 @@ int main(){
   printf("\t2) Clear statistics\n");
   printf("\t3) Measure current\n\n");
   printf("\tq) Quit\n\n");
-
+  char send[1024];
+  char rec[1024];
   scanf(" %c", &user_input);
   switch(user_input){
   case '1':
     do{
+      memset(send, 0, 1024);
+      memset(rec, 0, 1024);
+      // converts int to string to send sampling rate
+      strcpy(send, "q");
+      writeSerial(fd, send);
+      readSerial(fd,rec);
+      printf("%s", rec);
+      while(1){
+        readSerial(fd,rec);
+        printf("%s", rec);
+      }
+      
       printf("------------------------------------------------------------------------------\n");
       printf("What data do you want?\n");
       printf("\t1) last hour\n");
@@ -80,11 +93,7 @@ int main(){
     } while(user_input != 'b');
     break;
   case '2':
-    fclose(fopen("./diagram_output/data/hour.temp", "w"));
-    fclose(fopen("./diagram_output/data/day.temp", "w"));
-    fclose(fopen("./diagram_output/data/month.temp", "w"));
-    fclose(fopen("./diagram_output/data/year.temp", "w"));
-    printf("data cleared ...\n");
+    
     break;
   case '3':
     printf("Insert the sampling rate 1,2,4,8 (s): ");
@@ -101,10 +110,10 @@ int main(){
       printf("0 is not allowed\n");
       break; 
     }
-    char to_send[500];
-    char rec[500];
-    memset(rec, 0, 500);
-    // converts int to string
+    char to_send[1024];
+    char rec[1024];
+    memset(rec, 0, 1024);
+    // converts int to string to send sampling rate
     sprintf(to_send, "%d", sec_interval);
     writeSerial(fd, to_send);   
     alarm_flag = 1;
@@ -118,7 +127,7 @@ int main(){
   
   
   } while(user_input != 'q');
-  
+  // closing routines
   printf("closing pipe ...\n");
   close(fd);
 }
