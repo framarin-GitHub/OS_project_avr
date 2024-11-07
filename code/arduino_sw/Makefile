@@ -29,10 +29,10 @@ BINS=main.elf
 
 # put here the additional .o files you want to generate
 # one .c file for each .o should be present
-OBJS=./avr_common/uart.o ./analog_read/analog_read.o ./serial_communication/serial_communication.o ./manip_data/handler_data.o ./manip_data/struct_data.o 
+OBJS=./avr_common/uart.o ./analog_read/analog_read.o ./serial_communication/serial_communication.o ./manip_data/handler_data.o 
 
 # put here the additional header files needed for compilation
-HEADERS=./avr_common/uart.h ./serial_communication/serial_communication.h ./analog_read/analog_read.h ./manip_data/handler_data.h ./manip_data/struct_data.h
+HEADERS=./avr_common/uart.h ./serial_communication/serial_communication.h ./analog_read/analog_read.h ./manip_data/handler_data.h 
 
 # the file below contains the actual rules
 
