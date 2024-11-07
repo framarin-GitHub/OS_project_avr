@@ -4,14 +4,6 @@
 #include <errno.h>
 #include "./handler_data.h"
 #include "../serial_communication/serial_communication.h"
-#define HANDLE_ERROR_ERRNO(msg) \
-	do{ \
-	errno = 11;\
-	perror(msg); \
-	exit(11); \
-	} while(0)
-
-
 
 extern int hour[60];
 extern int day[24];

@@ -8,6 +8,7 @@
 #include "./serial_communication/read_write_serial.h"
 #include "./diagram_output/diagram_gnuplot.h"
 #include "./alarm/alarm.h"
+#include "./data_helpers/data_helpers.h"
 
 #define HANDLE_ERROR(msg,err) \
 	do{ \
@@ -23,10 +24,12 @@
 	
 extern int alarm_flag;
 extern int fd_for_handler;
+void commProtocolRoutine(int mode, int fd);
+
+char send[1024];
+char rec[1024];
 
 int main(){
-  // Initialize data structures from data files
-  //initData();
   // Serial initialization
   const char* serial_device = "/dev/ttyACM0";
   int baudrate = 19200;
@@ -49,23 +52,12 @@ int main(){
   printf("\t2) Clear statistics\n");
   printf("\t3) Measure current\n\n");
   printf("\tq) Quit\n\n");
-  char send[1024];
-  char rec[1024];
   scanf(" %c", &user_input);
   switch(user_input){
   case '1':
     do{
-      memset(send, 0, 1024);
-      memset(rec, 0, 1024);
-      // converts int to string to send sampling rate
-      strcpy(send, "q");
-      writeSerial(fd, send);
-      readSerial(fd,rec);
-      printf("%s", rec);
-      while(1){
-        readSerial(fd,rec);
-        printf("%s", rec);
-      }
+      commProtocolRoutine(1, fd);
+      recData(fd);
       
       printf("------------------------------------------------------------------------------\n");
       printf("What data do you want?\n");
@@ -93,13 +85,13 @@ int main(){
     } while(user_input != 'b');
     break;
   case '2':
-    
+    commProtocolRoutine(2, fd);
     break;
   case '3':
-    printf("Insert the sampling rate 1,2,4,8 (s): ");
+    printf("Insert the sampling rate(s): ");
     int sec_interval = 0;
     scanf("%d", &sec_interval);
-    if(sec_interval != 1 && sec_interval != 2 && sec_interval != 4 && sec_interval != 8){
+    if(sec_interval == 0 || sec_interval > 60){
       printf("insert a valid value\n");
       break; 
     }
@@ -110,18 +102,19 @@ int main(){
       printf("0 is not allowed\n");
       break; 
     }
-    char to_send[1024];
-    char rec[1024];
-    memset(rec, 0, 1024);
+    // start online mode
+    commProtocolRoutine(3, fd);
     // converts int to string to send sampling rate
-    sprintf(to_send, "%d", sec_interval);
-    writeSerial(fd, to_send);   
+    sprintf(send, "%d", sec_interval);
+    writeSerial(fd, send);   
     alarm_flag = 1;
     alarm(sec_alarm);
     while(alarm_flag){        
       readSerial(fd,rec);
       printf("\n%s", rec);
     } 
+    // ends online mode
+    commProtocolRoutine(4, fd);
     break;
   }
   
@@ -130,4 +123,37 @@ int main(){
   // closing routines
   printf("closing pipe ...\n");
   close(fd);
+}
+
+
+
+
+void commProtocolRoutine(int mode, int fd){
+  char cts[5];
+  switch(mode){
+    case 1: 
+      strcpy(cts, "q");
+      break;
+    case 2:
+      strcpy(cts, "c");
+      break;
+    case 3:
+      strcpy(cts, "s");
+      break;
+    case 4:
+      strcpy(cts, "e");
+      break;
+    default:
+      strcpy(cts, "?");
+  }    
+  memset(send, 0, 1024);
+  memset(rec, 0, 1024);
+  strcpy(send, cts);
+  writeSerial(fd, send);
+  // command is echoed 
+  readSerial(fd,rec);
+  // printf("%s", rec);
+  // feedback message
+  readSerial(fd,rec);
+  printf("%s", rec);
 }

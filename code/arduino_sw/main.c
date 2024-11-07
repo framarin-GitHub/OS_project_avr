@@ -54,10 +54,10 @@ int main(void){
           online_mode = 0;
           break;
         case 's':
-          UART_putString((uint8_t*)"starting online mode, send me the interval ...\n");
-          online_mode = 1;
+          UART_putString((uint8_t*)"starting online mode ...\n");
           UART_getString(buf);
           sec_interval = atoi((char*)buf);
+          online_mode = 1;
           break;
         default:
           UART_putString((uint8_t*)"what have you sent to me?\n");
