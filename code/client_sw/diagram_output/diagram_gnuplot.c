@@ -3,9 +3,12 @@
 #include <string.h>
 #include "./diagram_gnuplot.h"
 void initGnuplot(int mode, FILE* gnuplot_pipe){
+  char* key_pos = "set key top center\n";
+  char* pointsize = "set pointsize 2\n";
+  //char* yrange = "set yrange [0:100]\n";
   char title[200];
+  /*
   char xrange[200];
-  char* yrange = "set yrange [0:100]\n";
   strcpy(title, "set title \"");
   strcpy(xrange, "set xrange ");
   switch(mode){
@@ -29,13 +32,14 @@ void initGnuplot(int mode, FILE* gnuplot_pipe){
       strcat(title, "statistics of the latest year\"\n");
       strcat(xrange, "[0:12]\n");
       break;
-  }
+  }*/
   // send setting commands
   fprintf(gnuplot_pipe, "reset\n");
   fprintf(gnuplot_pipe, title);
-  fprintf(gnuplot_pipe, xrange);
-  fprintf(gnuplot_pipe, yrange);
-  fflush(gnuplot_pipe);
+  //fprintf(gnuplot_pipe, xrange);
+  //fprintf(gnuplot_pipe, yrange);
+  fprintf(gnuplot_pipe, key_pos);
+  fprintf(gnuplot_pipe, pointsize);
 }
 
 
@@ -49,21 +53,23 @@ void plotDiag(int mode){
   switch(mode){
     // hour
     case 0:
-      strcat(plot, "hour.temp\"\n");
+      strcat(plot, "hour.temp\"");
       break;
     // day
     case 1:
-      strcat(plot, "day.temp\"\n");
+      strcat(plot, "day.temp\"");
       break;
     // month 
     case 2:
-      strcat(plot, "month.temp\"\n");    
+      strcat(plot, "month.temp\"");    
       break;
     // year
     case 3:
-      strcat(plot, "year.temp\"\n");
+      strcat(plot, "year.temp\"");
       break;
   }
+  // points circle filled width 4 color orange
+  strcat(plot, " with linespoints pointtype 7 lw 4 linecolor 4\n");
   fprintf(gnuplot_pipe, plot);
   fflush(gnuplot_pipe);
 }

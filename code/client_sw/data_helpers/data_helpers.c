@@ -18,20 +18,34 @@ extern int day[24];
 extern int month[30];
 extern int year[12];
 
+extern time_t timestamp;
+
 void writeDataToFile(){
   FILE* f_h = fopen("./diagram_output/data/hour.temp", "w+");
   FILE* f_d = fopen("./diagram_output/data/day.temp", "w+");
   FILE* f_m = fopen("./diagram_output/data/month.temp", "w+");
   FILE* f_y = fopen("./diagram_output/data/year.temp", "w+");
-    
-  for(int i = 0; i < 60; i++)
-    fprintf(f_h,"%d %d\n", i, hour[i]);    
-  for(int i = 0; i < 24; i++)
-    fprintf(f_d,"%d %d\n", i, day[i]);
-  for(int i = 0; i < 30; i++)
-    fprintf(f_m,"%d %d\n", i+1, month[i]);
-  for(int i = 0; i < 12; i++)
-    fprintf(f_y,"%d %d\n", i+1, year[i]);
+  
+  time_t timings = timestamp;
+  for(int i = 0; i < 60; i++){
+    fprintf(f_h,"%ld %d\n", timings, hour[i]);   
+    timings -= 60;
+  }
+  timings = timestamp; 
+  for(int i = 0; i < 24; i++){
+    fprintf(f_d,"%ld %d\n", timings, day[i]);
+    timings -= 3600;
+  }  
+  timings = timestamp;
+  for(int i = 0; i < 30; i++){
+    fprintf(f_m,"%ld %d\n", timings, month[i]);
+    timings -= 86400;
+  }
+  timings = timestamp;
+  for(int i = 0; i < 12; i++){
+    fprintf(f_y,"%ld %d\n", timings, year[i]);
+    timings -= 2592000;
+  }
   
   fclose(f_h);
   fclose(f_d);
@@ -44,7 +58,6 @@ void recData(int fd){
   memset(day, -1, sizeof(int)*24);
   memset(month, -1, sizeof(int)*30);
   memset(year, -1, sizeof(int)*12);
-  
   for(int i = 0; i < 60; i++){
     readSerial(fd,rec);
     int value = atoi(rec);

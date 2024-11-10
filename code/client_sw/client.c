@@ -24,10 +24,12 @@
 	
 extern int alarm_flag;
 extern int fd_for_handler;
-void commProtocolRoutine(int mode, int fd);
+extern time_t timestamp;
 
 char send[1024];
 char rec[1024];
+
+void commProtocolRoutine(int mode, int fd);
 
 int main(){
   // Serial initialization
@@ -57,8 +59,12 @@ int main(){
   case '1':
     do{
       commProtocolRoutine(1, fd);
+      
+      // Get timestamp to recover timings
+      timestamp = time(NULL);
       recData(fd);
       
+      // ANOTHER LOOP HERE I DONT WANT TO DOWNLOAD EVERY TIME
       printf("------------------------------------------------------------------------------\n");
       printf("What data do you want?\n");
       printf("\t1) last hour\n");
@@ -66,7 +72,7 @@ int main(){
       printf("\t3) last day\n");
       printf("\t4) last year\n\n");
       printf("\tb) Back to main menu\n\n");
-     
+      printf("//data downloaded at %s\n", ctime(&timestamp));
       scanf(" %c", &user_input);
       switch(user_input){
         case '1':
