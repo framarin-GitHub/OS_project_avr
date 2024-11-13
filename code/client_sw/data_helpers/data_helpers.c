@@ -18,7 +18,7 @@ extern int day[24];
 extern int month[30];
 extern int year[12];
 
-extern time_t timestamp;
+extern struct tm* timestamp;
 
 void writeDataToFile(){
   FILE* f_h = fopen("./diagram_output/data/hour.temp", "w+");
@@ -26,25 +26,30 @@ void writeDataToFile(){
   FILE* f_m = fopen("./diagram_output/data/month.temp", "w+");
   FILE* f_y = fopen("./diagram_output/data/year.temp", "w+");
   
-  time_t timings = timestamp;
+  int m = timestamp->tm_min;
   for(int i = 0; i < 60; i++){
-    fprintf(f_h,"%ld %d\n", timings, hour[i]);   
-    timings -= 60;
+    if(m == -1) m = 59;
+    fprintf(f_h,"%d %d\n", m, hour[i]);   
+    m--;
   }
-  timings = timestamp; 
+  int h = timestamp->tm_hour; 
   for(int i = 0; i < 24; i++){
-    fprintf(f_d,"%ld %d\n", timings, day[i]);
-    timings -= 3600;
+    if(h == -1) h = 23;
+    fprintf(f_d,"%d %d\n", h, day[i]);
+    h--;
   }  
-  timings = timestamp;
+  int d = timestamp->tm_mday;
   for(int i = 0; i < 30; i++){
-    fprintf(f_m,"%ld %d\n", timings, month[i]);
-    timings -= 86400;
+  // Last 30 days
+    if(d == 31 || d == 0) d = 30;
+    fprintf(f_m,"%d %d\n", d, month[i]);
+    d--;
   }
-  timings = timestamp;
+  int mo = timestamp->tm_mon;
   for(int i = 0; i < 12; i++){
-    fprintf(f_y,"%ld %d\n", timings, year[i]);
-    timings -= 2592000;
+    if(mo == -1) mo = 11;
+    fprintf(f_y,"%d %d\n", mo+1, year[i]);
+    mo--;
   }
   
   fclose(f_h);

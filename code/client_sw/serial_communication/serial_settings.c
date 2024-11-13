@@ -18,7 +18,7 @@ void serialSetInterfaceAttribs(int fd, int speed, int parity) {
   // init termios struct
   memset(&tty, 0, sizeof tty);
   // copy from existing struct
-  if (tcgetattr (fd, &tty) != 0) HANDLE_ERROR("error from tcgetattr \n", errno);
+  if (tcgetattr (fd, &tty) != 0) HANDLE_ERROR("Error from tcgetattr \n", errno);
   switch (speed){
   case 19200:
     speed=B19200;
@@ -39,7 +39,7 @@ void serialSetInterfaceAttribs(int fd, int speed, int parity) {
     speed=B921600;
     break;
   default:
-    HANDLE_ERROR("cannot set baudrate \n", speed);
+    HANDLE_ERROR("Cannot set baudrate \n", speed);
   }
   // set in e out speed
   cfsetospeed (&tty, speed);
@@ -52,24 +52,24 @@ void serialSetInterfaceAttribs(int fd, int speed, int parity) {
   //tty.c_cflag &= ~CRTSCTS; //enable rts/cts hardware
 
   // sets the changes now
-  if (tcsetattr (fd, TCSANOW, &tty) != 0) HANDLE_ERROR("error from tcsetattr \n", errno);
+  if (tcsetattr (fd, TCSANOW, &tty) != 0) HANDLE_ERROR("Error from tcsetattr \n", errno);
 }
 
 void serialSetBlocking(int fd, int should_block) {
   struct termios tty;
   memset(&tty, 0, sizeof tty);
-  if (tcgetattr (fd, &tty) != 0) HANDLE_ERROR("error from tggetattr \n", errno);
+  if (tcgetattr (fd, &tty) != 0) HANDLE_ERROR("Error from tggetattr \n", errno);
 
   // 1 or 0 min char
   tty.c_cc[VMIN]  = should_block ? 1 : 0; 
   // 0.5 seconds read timeout
   tty.c_cc[VTIME] = 5; 
 
-  if (tcsetattr (fd, TCSANOW, &tty) != 0) HANDLE_ERROR("error setting term attributes \n", errno);
+  if (tcsetattr (fd, TCSANOW, &tty) != 0) HANDLE_ERROR("Error setting term attributes \n", errno);
 }
 
 int serialOpen(const char* name) {
   int fd = open(name, O_RDWR | O_NOCTTY | O_SYNC );
-  if (fd < 0) HANDLE_ERROR("error opening serial, fd \n", errno);
+  if (fd < 0) HANDLE_ERROR("Error opening serial, fd \n", errno);
   return fd;
 }

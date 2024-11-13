@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
 #define BAUD 19600
 #define MYUBRR (F_CPU/16/BAUD-1)
@@ -13,7 +14,6 @@ void UART_init(void){
 
   UCSR0C = (1<<UCSZ01) | (1<<UCSZ00); /* 8-bit data */ 
   UCSR0B = (1<<RXEN0) | (1<<TXEN0) | (1<<RXCIE0);   /* Enable RX and TX */  
-
 }
 
 void UART_putChar(uint8_t c){

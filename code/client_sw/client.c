@@ -22,9 +22,9 @@
 	exit(11); \
 	} while(0)
 	
-extern int alarm_flag;
+extern volatile int alarm_flag;
 extern int fd_for_handler;
-extern time_t timestamp;
+extern struct tm* timestamp;
 
 char send[1024];
 char rec[1024];
@@ -46,6 +46,8 @@ int main(){
   // CL menu cycles
   char user_input;
   do{
+  readSerial(fd,rec);
+  printf("%s", rec);
   printf("------------------------------------------------------------------------------\n");
   printf("WELCOME TO: Arduino current meter\n");
   printf("------------------------------------------------------------------------------\n\n");
@@ -56,15 +58,16 @@ int main(){
   printf("\tq) Quit\n\n");
   scanf(" %c", &user_input);
   switch(user_input){
-  case '1':
+  case '1': 
+    commProtocolRoutine(1, fd);   
+    // Get timestamp to recover timings
+    time_t rawtime;
+    time(&rawtime);
+    timestamp = localtime(&rawtime);
+    recData(fd);
+    printf("//data downloaded at %s\n", asctime(timestamp));
+           
     do{
-      commProtocolRoutine(1, fd);
-      
-      // Get timestamp to recover timings
-      timestamp = time(NULL);
-      recData(fd);
-      
-      // ANOTHER LOOP HERE I DONT WANT TO DOWNLOAD EVERY TIME
       printf("------------------------------------------------------------------------------\n");
       printf("What data do you want?\n");
       printf("\t1) last hour\n");
@@ -72,7 +75,6 @@ int main(){
       printf("\t3) last day\n");
       printf("\t4) last year\n\n");
       printf("\tb) Back to main menu\n\n");
-      printf("//data downloaded at %s\n", ctime(&timestamp));
       scanf(" %c", &user_input);
       switch(user_input){
         case '1':
@@ -98,14 +100,14 @@ int main(){
     int sec_interval = 0;
     scanf("%d", &sec_interval);
     if(sec_interval == 0 || sec_interval > 60){
-      printf("insert a valid value\n");
+      printf("//insert a valid value\n");
       break; 
     }
     printf("Insert how long you want to measure(s): ");
     int sec_alarm = 0;
     scanf("%d", &sec_alarm);
     if(sec_alarm == 0){
-      printf("0 is not allowed\n");
+      printf("//0 is not allowed\n");
       break; 
     }
     // start online mode
@@ -122,12 +124,12 @@ int main(){
     // ends online mode
     commProtocolRoutine(4, fd);
     break;
+    default:
+      user_input = '0';
   }
-  
-  
   } while(user_input != 'q');
   // closing routines
-  printf("closing pipe ...\n");
+  printf("//closing pipe ...\n");
   close(fd);
 }
 
@@ -158,7 +160,8 @@ void commProtocolRoutine(int mode, int fd){
   writeSerial(fd, send);
   // command is echoed 
   readSerial(fd,rec);
-  // printf("%s", rec);
+  // Enable for debug 
+  /* printf("avr\\%s", rec);  */
   // feedback message
   readSerial(fd,rec);
   printf("%s", rec);

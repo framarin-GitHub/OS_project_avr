@@ -5,7 +5,7 @@
 void initGnuplot(int mode, FILE* gnuplot_pipe){
   char* key_pos = "set key top center\n";
   char* pointsize = "set pointsize 2\n";
-  //char* yrange = "set yrange [0:100]\n";
+  //char* yrange = "set yrange [0:1024]\n";
   char title[200];
   /*
   char xrange[200];
