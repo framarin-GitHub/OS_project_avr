@@ -1,4 +1,4 @@
 #pragma once
 
-void plotDiag(int mode);
+void plotDiag(int mode, char* time);
 

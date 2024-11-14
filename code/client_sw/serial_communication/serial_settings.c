@@ -13,7 +13,7 @@
 	} while(0)
 
 
-void serialSetInterfaceAttribs(int fd, int speed, int parity) {
+void serialSetInterfaceAttribs(int fd, int speed, int parity, int should_block) {
   struct termios tty;
   // init termios struct
   memset(&tty, 0, sizeof tty);
@@ -50,26 +50,20 @@ void serialSetInterfaceAttribs(int fd, int speed, int parity) {
   tty.c_cflag &= ~CSIZE; //char size mask values cs5-8
   tty.c_cflag |=  CS8; //uno soltanto dei cs deve essere attivo e lo fanno ll.30-31
   //tty.c_cflag &= ~CRTSCTS; //enable rts/cts hardware
-
-  // sets the changes now
-  if (tcsetattr (fd, TCSANOW, &tty) != 0) HANDLE_ERROR("Error from tcsetattr \n", errno);
-}
-
-void serialSetBlocking(int fd, int should_block) {
-  struct termios tty;
-  memset(&tty, 0, sizeof tty);
-  if (tcgetattr (fd, &tty) != 0) HANDLE_ERROR("Error from tggetattr \n", errno);
-
+  tty.c_lflag &= ~ICANON;
+  
   // 1 or 0 min char
   tty.c_cc[VMIN]  = should_block ? 1 : 0; 
   // 0.5 seconds read timeout
   tty.c_cc[VTIME] = 5; 
 
-  if (tcsetattr (fd, TCSANOW, &tty) != 0) HANDLE_ERROR("Error setting term attributes \n", errno);
+  // sets the changes now
+  if (tcsetattr (fd, TCSANOW, &tty) != 0) HANDLE_ERROR("Error from tcsetattr \n", errno);
 }
 
+
 int serialOpen(const char* name) {
-  int fd = open(name, O_RDWR | O_NOCTTY | O_SYNC );
+  int fd = open(name, O_RDWR | O_NOCTTY | O_SYNC);
   if (fd < 0) HANDLE_ERROR("Error opening serial, fd \n", errno);
   return fd;
 }

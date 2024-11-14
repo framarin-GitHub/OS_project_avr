@@ -3,9 +3,6 @@
 int serialOpen(const char* name);
 
 // sets the attributes
-void serialSetInterfaceAttribs(int fd, int speed, int parity);
-  
-// puts the port in blocking/nonblocking mode
-void serialSetBlocking(int fd, int should_block);
+void serialSetInterfaceAttribs(int fd, int speed, int parity, int should_block);
 
 

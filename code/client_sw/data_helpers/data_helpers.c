@@ -28,26 +28,21 @@ void writeDataToFile(){
   
   int m = timestamp->tm_min;
   for(int i = 0; i < 60; i++){
-    if(m == -1) m = 59;
     fprintf(f_h,"%d %d\n", m, hour[i]);   
     m--;
   }
   int h = timestamp->tm_hour; 
   for(int i = 0; i < 24; i++){
-    if(h == -1) h = 23;
     fprintf(f_d,"%d %d\n", h, day[i]);
     h--;
   }  
   int d = timestamp->tm_mday;
   for(int i = 0; i < 30; i++){
-  // Last 30 days
-    if(d == 31 || d == 0) d = 30;
     fprintf(f_m,"%d %d\n", d, month[i]);
     d--;
   }
   int mo = timestamp->tm_mon;
   for(int i = 0; i < 12; i++){
-    if(mo == -1) mo = 11;
     fprintf(f_y,"%d %d\n", mo+1, year[i]);
     mo--;
   }

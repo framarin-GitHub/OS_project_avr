@@ -31,13 +31,12 @@ char rec[1024];
 
 void commProtocolRoutine(int mode, int fd);
 
-int main(){
+int main(int argc, char *argv[]){
   // Serial initialization
   const char* serial_device = "/dev/ttyACM0";
   int baudrate = 19200;
   int fd = serialOpen(serial_device);
-  serialSetInterfaceAttribs(fd, baudrate, 0);
-  serialSetBlocking(fd, 1);
+  serialSetInterfaceAttribs(fd, baudrate, 0, 1);
   printf("//serial initialized ...\n");
   // Initialize signal handler for sigalrm
   fd_for_handler = fd;
@@ -45,11 +44,13 @@ int main(){
   
   // CL menu cycles
   char user_input;
+  if(argc > 1 && argv[1][0] == 'f'){
+    readSerial(fd,rec);
+    printf("//first connection ... \n%s", rec);
+  }
   do{
-  readSerial(fd,rec);
-  printf("%s", rec);
   printf("------------------------------------------------------------------------------\n");
-  printf("WELCOME TO: Arduino current meter\n");
+  printf("\t\t\tWELCOME TO: Arduino current meter\n");
   printf("------------------------------------------------------------------------------\n\n");
   printf("What would you like to do?\n\n");
   printf("\t1) Query statistics\n");
@@ -65,29 +66,33 @@ int main(){
     time(&rawtime);
     timestamp = localtime(&rawtime);
     recData(fd);
-    printf("//data downloaded at %s\n", asctime(timestamp));
+    char time_string[500] = "";
+    strcpy(time_string, asctime(timestamp));
+    // remove \n from time_string to use it in gnuplot label
+    time_string[strcspn(time_string, "\n")] = 0;
+    printf("//data downloaded at %s\n", time_string);
            
     do{
       printf("------------------------------------------------------------------------------\n");
       printf("What data do you want?\n");
-      printf("\t1) last hour\n");
-      printf("\t2) last month\n");
-      printf("\t3) last day\n");
-      printf("\t4) last year\n\n");
+      printf("\t1) latest hour\n");
+      printf("\t2) latest day\n");
+      printf("\t3) latest month\n");
+      printf("\t4) latest year\n\n");
       printf("\tb) Back to main menu\n\n");
       scanf(" %c", &user_input);
       switch(user_input){
         case '1':
-          plotDiag(0);
+          plotDiag(0, time_string);
           break;
         case '2':
-          plotDiag(1);
+          plotDiag(1, time_string);
           break;
         case '3':
-          plotDiag(2);
+          plotDiag(2, time_string);
           break;
         case '4':
-          plotDiag(3);
+          plotDiag(3, time_string);
           break;        
       }
     } while(user_input != 'b');
@@ -124,6 +129,8 @@ int main(){
     // ends online mode
     commProtocolRoutine(4, fd);
     break;
+    case 'q':
+      break;
     default:
       user_input = '0';
   }
@@ -137,7 +144,7 @@ int main(){
 
 
 void commProtocolRoutine(int mode, int fd){
-  char cts[5];
+  char cts[2];
   switch(mode){
     case 1: 
       strcpy(cts, "q");
