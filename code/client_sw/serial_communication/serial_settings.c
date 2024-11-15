@@ -13,7 +13,7 @@
 	} while(0)
 
 
-void serialSetInterfaceAttribs(int fd, int speed, int parity, int should_block) {
+void serialSetInterfaceAttribs(int fd, int speed, int parity, int should_block){
   struct termios tty;
   // init termios struct
   memset(&tty, 0, sizeof tty);

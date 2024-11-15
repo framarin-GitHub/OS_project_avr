@@ -23,7 +23,6 @@
 	} while(0)
 	
 extern volatile int alarm_flag;
-extern int fd_for_handler;
 extern struct tm* timestamp;
 
 char send[1024];
@@ -39,7 +38,6 @@ int main(int argc, char *argv[]){
   serialSetInterfaceAttribs(fd, baudrate, 0, 1);
   printf("//serial initialized ...\n");
   // Initialize signal handler for sigalrm
-  fd_for_handler = fd;
   initSignalHandler();
   
   // CL menu cycles

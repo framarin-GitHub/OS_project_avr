@@ -9,6 +9,8 @@
 	perror(msg); \
 	exit(err); \
 	} while(0)
+	
+extern volatile int alarm_flag;
 
 static void handler(int signum){
   alarm_flag = 0;

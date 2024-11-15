@@ -1,8 +1,9 @@
--void plotDiag(int mode, FILE* gnuplot_pipe);
+-void plotDiag(int mode, char* time);
 
-plotDiag calls gnuplot plot function with the right data file based on mode. 
-  It calls initGnuplot, which initializes gnuplot with format properties such as 
-  title, xaxis and yaxis, depending upon queries, which is represented by mode. 
-  It sends these commands through gnuplot_pipe.
+plotDiag opens the pipe to send commands to gnuplot with persistent in order to leave the window open even 
+  when program terminates. It calls initGnuplot, which initializes gnuplot with format properties such
+  as title, xaxis, yaxis, ecc.; depending upon client queries, which is represented by mode.
+  Strings to send through pipe are built with srcat() and strcpy() and they ends with new line.
+  Data contains the 4 files in which information are stored.
 
 
