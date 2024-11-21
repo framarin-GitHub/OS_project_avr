@@ -43,7 +43,7 @@ int main(void){
   UART_putString((uint8_t*)"avr\\init complete ...\n");
   
   int value_read = 0;
-  int value_acc = 0; 
+  unsigned long int value_acc = 0; 
   int to_ins = -1;
   int sec_interval = 1;
   
@@ -55,6 +55,9 @@ int main(void){
   while(1){
     if(timer_int_occ){
       value_read = analogRead(0);
+      // possible source of strange behavior: 60*1023 overflows to -4000 (unsigned long int not enough big).
+      // should be fine because we work centering the dinamic at 3.3V and we don't want
+      // to have 60 seconds of 5V.
       value_acc += value_read;
       i1++;
       // sending data in online mode every sec_interval seconds

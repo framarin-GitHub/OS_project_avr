@@ -71,7 +71,7 @@ void plotDiag(int mode, char* time){
   strcat(plot, " with linespoints pointtype 7 lw 4 linecolor 4\n");
   strcpy(label, "set label \"");
   strcat(label, time);
-  strcat(label, "\" at 0,5\n");
+  strcat(label, "\" at 0,20\n");
   printf("%s", label);
   fprintf(gnuplot_pipe, label);
   fprintf(gnuplot_pipe, plot);
