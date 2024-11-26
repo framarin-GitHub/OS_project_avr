@@ -1,0 +1,6 @@
+tech_sources/
+code/client_sw/diagram_output/data/
+*.o
+code/client_sw/client
+code/arduino_sw/main.elf
+code/arduino_sw/main.hex
