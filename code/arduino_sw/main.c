@@ -39,13 +39,15 @@ int main(void){
   initData();
   // Initialize timer
   timerIntInit();
-  
+  initADC(0);
+
   UART_putString((uint8_t*)"avr\\init complete ...\n");
   
   int value_read = 0;
   float value_acc = 0; 
   int to_ins = -1;
   int sec_interval = 1;
+  int samples = 0;
   
   int i1 = 0;
   int i2 = 0;
@@ -54,7 +56,8 @@ int main(void){
     
   while(1){
     if(timer_int_occ){
-      value_read = analogRead(0);
+      value_read = analogRead();
+      value_read = (value_read>675) ? value_read-675 : 675-value_read;
       value_acc += value_read;
       i1++;
       // sending data in online mode every sec_interval seconds
@@ -108,11 +111,24 @@ int main(void){
           sec_interval = atoi((char*)buf);
           online_mode = 1;
           break;
+        case 'f':
+          //this mode will temporarily stop data collection for statistics
+          UART_putString((uint8_t*)"avr\\starting fast sampling mode ...\n");
+          UART_getString(buf);
+          samples = atoi((char*)buf);
+          while(samples--){
+            value_read = analogRead();
+            value_read = (value_read>675) ? value_read-675 : 675-value_read;
+            sprintf((char*)buf, "%d\n", value_read);
+            UART_putString(buf);    
+          }
+          break;
         default:
           UART_putString((uint8_t*)"avr\\what have you sent to me?\n");
       }
       flag_read = 0;
     }
   }
+  
 }
   

@@ -46,6 +46,7 @@ int main(int argc, char *argv[]){
     readSerial(fd,rec);
     printf("//first connection ... \n%s", rec);
   }
+  
   do{
   printf("------------------------------------------------------------------------------\n");
   printf("\t\t\tWELCOME TO: Arduino current meter\n");

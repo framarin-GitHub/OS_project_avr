@@ -1,7 +1,6 @@
 #include <avr/io.h>
 
-int analogRead(uint8_t pin){
-
+void initADC(uint8_t pin){
    //INIT registers
    // set voltage reference
     ADMUX = (1 << REFS0);
@@ -11,8 +10,9 @@ int analogRead(uint8_t pin){
     ADCSRB &= 0xF7;  
    //ADC turn on and set prescaler to 128
     ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
-    
+}
 
+int analogRead(){
    // Start the conversion
     ADCSRA |= (1 << ADSC);
    // Busy wait conversion
