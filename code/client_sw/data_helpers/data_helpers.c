@@ -85,3 +85,13 @@ void recData(int fd){
   writeDataToFile();
 }
 
+void recFastSamples(int fd, int samples){
+  FILE* f_s = fopen("./diagram_output/data/fast_sample.temp", "w+");
+  int counter = 0;
+  while(samples--){
+    readSerial(fd, rec);
+    int value = atoi(rec);
+    fprintf(f_s,"%d %d\n", counter++, value);
+  }
+  fclose(f_s);
+}

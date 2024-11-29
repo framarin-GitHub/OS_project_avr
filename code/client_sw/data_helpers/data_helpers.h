@@ -9,3 +9,5 @@ int year[12];
 struct tm* timestamp;
 
 void recData(int fd);
+
+void recFastSamples(int fd, int samples);

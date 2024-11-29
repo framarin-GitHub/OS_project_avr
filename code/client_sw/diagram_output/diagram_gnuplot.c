@@ -5,7 +5,7 @@
 void initGnuplot(int mode, FILE* gnuplot_pipe){
   char* key_pos = "set key top center\n";
   char* pointsize = "set pointsize 2\n";
-  char* yrange = "set yrange [-1:1024]\n";
+  char* yrange = "set yrange [-1:676]\n";
   char title[200]; 
   char xrange[200];
   strcpy(title, "set title \"");
@@ -30,6 +30,10 @@ void initGnuplot(int mode, FILE* gnuplot_pipe){
     case 3:
       strcat(title, "statistics of the latest year\"\n");
       strcat(xrange, "[-12:12]\n");
+      break;
+    case 4:
+      strcat(title, "function representation\"\n");
+      strcat(xrange, "[0:500]\n");
       break;
   }
   // send setting commands
@@ -66,14 +70,19 @@ void plotDiag(int mode, char* time){
     case 3:
       strcat(plot, "year.temp\"");
       break;
+    case 4:
+      strcat(plot, "fast_sample.temp\"");
+      break;
   }
   // points circle filled width 4 color orange
   strcat(plot, " with linespoints pointtype 7 lw 4 linecolor 4\n");
   strcpy(label, "set label \"");
-  strcat(label, time);
+  if(mode != 4)
+    strcat(label, time);
   strcat(label, "\" at 0,20\n");
   printf("%s", label);
-  fprintf(gnuplot_pipe, label);
+  if(mode != 4)
+    fprintf(gnuplot_pipe, label);
   fprintf(gnuplot_pipe, plot);
   fflush(gnuplot_pipe);
 }

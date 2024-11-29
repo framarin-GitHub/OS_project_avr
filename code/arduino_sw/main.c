@@ -116,11 +116,15 @@ int main(void){
           UART_putString((uint8_t*)"avr\\starting fast sampling mode ...\n");
           UART_getString(buf);
           samples = atoi((char*)buf);
-          while(samples--){
-            value_read = analogRead();
-            value_read = (value_read>675) ? value_read-675 : 675-value_read;
-            sprintf((char*)buf, "%d\n", value_read);
+          int* value_arr = (int*)malloc(sizeof(int)*samples);
+          int* temp = value_arr;
+          for(int i = 0; i < samples; i++){
+            *temp = 675-analogRead();
+            temp++;
+          }
+          for(int i = 0; i < samples; i++){
             UART_putString(buf);    
+            sprintf((char*)buf, "%d\n", value_arr[i]);
           }
           break;
         default:

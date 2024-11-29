@@ -54,7 +54,8 @@ int main(int argc, char *argv[]){
   printf("What would you like to do?\n\n");
   printf("\t1) Query statistics\n");
   printf("\t2) Clear statistics\n");
-  printf("\t3) Measure current\n\n");
+  printf("\t3) Measure current\n");
+  printf("\t4) Fast sampling\n\n");
   printf("\tq) Quit\n\n");
   scanf(" %c", &user_input);
   switch(user_input){
@@ -128,6 +129,17 @@ int main(int argc, char *argv[]){
     // ends online mode
     commProtocolRoutine(4, fd);
     break;
+    case '4':
+      printf("Insert the number of samples: ");
+      int samples = 0;
+      scanf("%d", &samples);
+      // start fast sampling
+      commProtocolRoutine(5, fd);
+      sprintf(send, "%d", samples);
+      writeSerial(fd, send);
+      recFastSamples(fd, samples);
+      plotDiag(4, NULL);    
+      break;
     case 'q':
       break;
     default:
@@ -156,6 +168,9 @@ void commProtocolRoutine(int mode, int fd){
       break;
     case 4:
       strcpy(cts, "e");
+      break;
+    case 5:
+      strcpy(cts, "f");
       break;
     default:
       strcpy(cts, "?");
