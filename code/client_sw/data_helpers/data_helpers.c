@@ -20,6 +20,12 @@ extern int year[12];
 
 extern struct tm* timestamp;
 
+float ampereConversion(int value){
+  if (value == 0 || value == -1) return value;
+  // 1 is equal to 5mv==5mA
+  return ((float)value*5)/1000;
+}
+
 void writeDataToFile(){
   FILE* f_h = fopen("./diagram_output/data/hour.temp", "w+");
   FILE* f_d = fopen("./diagram_output/data/day.temp", "w+");
@@ -28,22 +34,22 @@ void writeDataToFile(){
   
   int m = timestamp->tm_min;
   for(int i = 0; i < 60; i++){
-    fprintf(f_h,"%d %d\n", m, hour[i]);   
+    fprintf(f_h,"%d %f\n", m, ampereConversion(hour[i]));   
     m--;
   }
   int h = timestamp->tm_hour; 
   for(int i = 0; i < 24; i++){
-    fprintf(f_d,"%d %d\n", h, day[i]);
+    fprintf(f_d,"%d %f\n", h, ampereConversion(day[i]));
     h--;
   }  
   int d = timestamp->tm_mday;
   for(int i = 0; i < 30; i++){
-    fprintf(f_m,"%d %d\n", d, month[i]);
+    fprintf(f_m,"%d %f\n", d, ampereConversion(month[i]));
     d--;
   }
   int mo = timestamp->tm_mon;
   for(int i = 0; i < 12; i++){
-    fprintf(f_y,"%d %d\n", mo+1, year[i]);
+    fprintf(f_y,"%d %f\n", mo+1, ampereConversion(year[i]));
     mo--;
   }
   
