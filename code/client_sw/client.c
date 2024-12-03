@@ -40,11 +40,16 @@ int main(int argc, char *argv[]){
   // Initialize signal handler for sigalrm
   initSignalHandler();
   
+  memset(send, 0, 1024);
+  memset(rec, 0, 1024);
+  
   // CL menu cycles
   char user_input;
   if(argc > 1 && argv[1][0] == 'f'){
     readSerial(fd,rec);
     printf("//first connection ... \n%s", rec);
+    // using CL args puts '\n' char in the stream and this read will discard it
+    readSerial(fd,rec);
   }
   
   do{
@@ -155,30 +160,26 @@ int main(int argc, char *argv[]){
 
 
 void commProtocolRoutine(int mode, int fd){
-  char cts[2];
   switch(mode){
     case 1: 
-      strcpy(cts, "q");
+      strcpy(send, "q");
       break;
     case 2:
-      strcpy(cts, "c");
+      strcpy(send, "c");
       break;
     case 3:
-      strcpy(cts, "s");
+      strcpy(send, "s");
       break;
     case 4:
-      strcpy(cts, "e");
+      strcpy(send, "e");
       break;
     case 5:
-      strcpy(cts, "f");
+      strcpy(send, "f");
       break;
     default:
-      strcpy(cts, "?");
+      strcpy(send, "?");
   }    
-  memset(send, 0, 1024);
-  memset(rec, 0, 1024);
-  strcpy(send, cts);
-  writeSerial(fd, send);
+  writeSerial(fd,send);
   // command is echoed 
   readSerial(fd,rec);
   // Enable for debug 

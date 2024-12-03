@@ -39,9 +39,10 @@ int main(void){
   initData();
   // Initialize timer
   timerIntInit();
+  // Initialize analog read on pin 0
   initADC(0);
 
-  UART_putString((uint8_t*)"avr\\init complete ...\n");
+  UART_putString((uint8_t*)"avr\\\\init complete ...\n");
   
   int value_read = 0;
   float value_acc = 0; 
@@ -94,26 +95,27 @@ int main(void){
       UART_putString((uint8_t*) buf);
       switch(buf[0]){
         case 'c':
-          UART_putString((uint8_t*)"avr\\clearing stats ...\n");
+          UART_putString((uint8_t*)"avr\\\\clearing stats ...\n");
           initData();
           break;
         case 'q':
-          UART_putString((uint8_t*)"avr\\sending data ...\n");
+          UART_putString((uint8_t*)"avr\\\\sending data ...\n");
           sendData();          
           break;
         case 'e':
-          UART_putString((uint8_t*)"avr\\ending online mode ...\n");
+          UART_putString((uint8_t*)"avr\\\\ending online mode ...\n");
           online_mode = 0;
           break;
         case 's':
-          UART_putString((uint8_t*)"avr\\starting online mode ...\n");
+          UART_putString((uint8_t*)"avr\\\\starting online mode ...\n");
           UART_getString(buf);
           sec_interval = atoi((char*)buf);
           online_mode = 1;
           break;
         case 'f':
-          //this mode will temporarily stop data collection for statistics
-          UART_putString((uint8_t*)"avr\\starting fast sampling mode ...\n");
+          // this mode will temporarily stop data collection for statistics
+          // sampling at 125kHz requires 2500 samples to span across one period of 50Hz alternate current 
+          UART_putString((uint8_t*)"avr\\\\starting fast sampling mode ...\n");
           UART_getString(buf);
           samples = atoi((char*)buf);
           int* value_arr = (int*)malloc(sizeof(int)*samples);
@@ -123,12 +125,13 @@ int main(void){
             temp++;
           }
           for(int i = 0; i < samples; i++){
-            UART_putString(buf);    
             sprintf((char*)buf, "%d\n", value_arr[i]);
+            UART_putString(buf);    
           }
+          free(value_arr);
           break;
         default:
-          UART_putString((uint8_t*)"avr\\what have you sent to me?\n");
+          UART_putString((uint8_t*)"avr\\\\what have you sent to me?\n");
       }
       flag_read = 0;
     }
