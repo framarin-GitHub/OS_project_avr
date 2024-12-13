@@ -48,8 +48,6 @@ int main(int argc, char *argv[]){
   if(argc > 1 && argv[1][0] == 'f'){
     readSerial(fd,rec);
     printf("//first connection ... \n%s", rec);
-    // using CL args puts '\n' char in the stream and this read will discard it
-    readSerial(fd,rec);
   }
   
   do{

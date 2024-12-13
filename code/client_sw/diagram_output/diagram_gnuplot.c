@@ -5,9 +5,11 @@
 void initGnuplot(int mode, FILE* gnuplot_pipe){
   char* key_pos = "set key top center\n";
   char* pointsize = "set pointsize 2\n";
-  char* yrange = "set yrange [-1:676]\n";
+  char* yrange = "set yrange [-1:3375]\n";
   char title[200]; 
   char xrange[200];
+  char* ylabel = "set ylabel \"current(milliAmpere)\" offset (0, 0, 0) rotate by -270 textcolor lt -1\n";
+  char* xlabel = "set xlabel \"values\" offset (0, 0, 0) rotate norotate textcolor lt -1\n";
   strcpy(title, "set title \"");
   strcpy(xrange, "set xrange ");
   switch(mode){
@@ -33,7 +35,8 @@ void initGnuplot(int mode, FILE* gnuplot_pipe){
       break;
     case 4:
       strcat(title, "function representation\"\n");
-      strcat(xrange, "[0:500]\n");
+      yrange = "set yrange [-3375:3375]\n";
+      strcat(xrange, "[0:1000]\n");
       break;
   }
   // send setting commands
@@ -43,6 +46,8 @@ void initGnuplot(int mode, FILE* gnuplot_pipe){
   fprintf(gnuplot_pipe, yrange);
   fprintf(gnuplot_pipe, key_pos);
   fprintf(gnuplot_pipe, pointsize);
+  fprintf(gnuplot_pipe, xlabel);
+  fprintf(gnuplot_pipe, ylabel);
 }
 
 
@@ -80,7 +85,6 @@ void plotDiag(int mode, char* time){
   if(mode != 4)
     strcat(label, time);
   strcat(label, "\" at 0,20\n");
-  printf("%s", label);
   if(mode != 4)
     fprintf(gnuplot_pipe, label);
   fprintf(gnuplot_pipe, plot);

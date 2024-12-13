@@ -68,25 +68,26 @@ void recData(int fd){
     readSerial(fd,rec);
     int value = atoi(rec);
     if(value == -1) break;
-    hour[i] = value;
+    //conversion to milliAmpere is *5
+    hour[i] = 5*value;
   }
   for(int i = 0; i < 24; i++){
     readSerial(fd,rec);
     int value = atoi(rec);
     if(value == -1) break;
-    day[i] = value;
+    day[i] = 5*value;
   }
   for(int i = 0; i < 30; i++){
     readSerial(fd,rec);
     int value = atoi(rec);
     if(value == -1) break;
-    month[i] = value;
+    month[i] = 5*value;
   }
   for(int i = 0; i < 12; i++){
     readSerial(fd,rec);
     int value = atoi(rec);
     if(value == -1) break;
-    year[i] = value;
+    year[i] = 5*value;
   }
   writeDataToFile();
 }
@@ -97,6 +98,8 @@ void recFastSamples(int fd, int samples){
   while(samples--){
     readSerial(fd, rec);
     int value = atoi(rec);
+    //conversion to milliAmpere is *5
+    value = 5*value;
     fprintf(f_s,"%d %d\n", counter++, value);
   }
   fclose(f_s);
