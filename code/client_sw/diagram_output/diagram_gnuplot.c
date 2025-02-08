@@ -5,7 +5,7 @@
 void initGnuplot(int mode, FILE* gnuplot_pipe){
   char* key_pos = "set key top center\n";
   char* pointsize = "set pointsize 2\n";
-  char* yrange = "set yrange [-1:3375]\n";
+  char* yrange = "set yrange [-1:1024]\n";
   char title[200]; 
   char xrange[200];
   char* ylabel = "set ylabel \"current(milliAmpere)\" offset (0, 0, 0) rotate by -270 textcolor lt -1\n";
@@ -35,7 +35,7 @@ void initGnuplot(int mode, FILE* gnuplot_pipe){
       break;
     case 4:
       strcat(title, "function representation\"\n");
-      yrange = "set yrange [-3375:3375]\n";
+      yrange = "set yrange [-1024:1024]\n";
       strcat(xrange, "[0:1000]\n");
       break;
   }

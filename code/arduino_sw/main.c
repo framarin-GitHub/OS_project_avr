@@ -15,6 +15,8 @@ extern int hour[60];
 extern int day[24];
 extern int month[30];
 extern int year[12];
+double gain;
+double partition;
 
 int online_mode = 0;
 
@@ -44,8 +46,8 @@ int main(void){
 
   UART_putString((uint8_t*)"avr\\\\init complete ...\n");
   
-  int value_read = 0;
-  float value_acc = 0; 
+  double value_read = 0;
+  double value_acc = 0; 
   int to_ins = -1;
   int sec_interval = 1;
   int samples = 0;
@@ -58,12 +60,12 @@ int main(void){
   while(1){
     if(timer_int_occ){
       value_read = analogRead();
-      value_read = (value_read>675) ? value_read-675 : 675-value_read;
+      value_read = (value_read*gain)*(1/partition);
       value_acc += value_read;
       i1++;
       // sending data in online mode every sec_interval seconds
       if(online_mode && (i1%sec_interval == 0)){
-        sprintf((char*)buf, "%d\n", value_read);
+        sprintf((char*)buf, "%d\n", (int)value_read);
         UART_putString(buf);    
       }
       // inserting one minute mean in hour array
@@ -94,6 +96,17 @@ int main(void){
       UART_getString(buf);	
       UART_putString((uint8_t*) buf);
       switch(buf[0]){
+        case 'i':
+          UART_putString((uint8_t*)"avr\\\\init data ...\n");
+          UART_getString(buf);
+          printf("\n%s\n", buf);
+          gain = atof((char*)buf);
+          UART_getString(buf);
+          partition = atof((char*)buf);
+          printf("gain %lf", gain);
+          printf("partition %lf", partition);
+
+          break;
         case 'c':
           UART_putString((uint8_t*)"avr\\\\clearing stats ...\n");
           initData();
@@ -114,18 +127,22 @@ int main(void){
           break;
         case 'f':
           // this mode will temporarily stop data collection for statistics
-          // sampling at 125kHz requires 2500 samples to span across one period of 50Hz alternate current 
+          // sampling at 125kHz clock frequency, with 10 clock cycles required for 1 ADC
+          // requires 250 samples to span across one period of 50Hz alternate current 
+
           UART_putString((uint8_t*)"avr\\\\starting fast sampling mode ...\n");
           UART_getString(buf);
           samples = atoi((char*)buf);
-          int* value_arr = (int*)malloc(sizeof(int)*samples);
-          int* temp = value_arr;
+          double* value_arr = (double*)malloc(sizeof(double)*samples);
+          double* temp = value_arr;
+          double val_read = 0;
           for(int i = 0; i < samples; i++){
-            *temp = 675-analogRead();
+            val_read = analogRead();
+            *temp = (val_read*gain)*(1/partition);
             temp++;
           }
           for(int i = 0; i < samples; i++){
-            sprintf((char*)buf, "%d\n", value_arr[i]);
+            sprintf((char*)buf, "%d\n", (int)value_arr[i]);
             UART_putString(buf);    
           }
           free(value_arr);

@@ -48,6 +48,30 @@ int main(int argc, char *argv[]){
   if(argc > 1 && argv[1][0] == 'f'){
     readSerial(fd,rec);
     printf("//first connection ... \n%s", rec);
+    printf("------------------------------------------------------------------------------\n");
+    int Rf = -1;
+    int R1 = -1;
+    double partition = -1;
+    double gain = 0;
+    do{
+    printf("define circuit:\n");
+    printf("0 is not allowed!\n");
+      printf("\tRf(Ohm): ");
+      scanf(" %d", &Rf);
+      printf("\tR1(Ohm): ");
+      scanf(" %d", &R1);
+      printf("\tpartition(0,1]: ");
+      scanf(" %lf", &partition);
+    } while( (Rf == 0) || (R1 == 0) || (partition == 0));
+    // gain formula for non invertent transresistence circuit
+    gain = 1+(Rf/((double)R1));
+    printf("gain : %lf\n", gain);
+    // send data
+    commProtocolRoutine(0, fd);
+      sprintf(send, "%lf", gain);
+      writeSerial(fd, send); 
+      sprintf(send, "%lf", partition);
+      writeSerial(fd, send); 
   }
   
   do{
@@ -159,6 +183,9 @@ int main(int argc, char *argv[]){
 
 void commProtocolRoutine(int mode, int fd){
   switch(mode){
+    case 0: 
+      strcpy(send, "i");
+      break;
     case 1: 
       strcpy(send, "q");
       break;
