@@ -24,11 +24,15 @@
 	
 extern volatile int alarm_flag;
 extern struct tm* timestamp;
+extern int partition;
+extern double gain;
+int Rf = -1;
+int R1 = -1;
 
 char send[1024];
 char rec[1024];
 
-void commProtocolRoutine(int mode, int fd);
+void protocolRoutine(int mode, int fd);
 
 int main(int argc, char *argv[]){
   // Serial initialization
@@ -46,32 +50,45 @@ int main(int argc, char *argv[]){
   // CL menu cycles
   char user_input;
   if(argc > 1 && argv[1][0] == 'f'){
+    printf("------------------------------------------------------------------------------\n");
     readSerial(fd,rec);
     printf("//first connection ... \n%s", rec);
-    printf("------------------------------------------------------------------------------\n");
-    int Rf = -1;
-    int R1 = -1;
-    double partition = -1;
-    double gain = 0;
+    
     do{
-    printf("define circuit:\n");
-    printf("0 is not allowed!\n");
+      printf("define circuit:\n");
       printf("\tRf(Ohm): ");
       scanf(" %d", &Rf);
       printf("\tR1(Ohm): ");
       scanf(" %d", &R1);
-      printf("\tpartition(0,1]: ");
-      scanf(" %lf", &partition);
+      printf("\tpartition[1,100]: ");
+      scanf(" %d", &partition);
     } while( (Rf == 0) || (R1 == 0) || (partition == 0));
-    // gain formula for non invertent transresistence circuit
+    // gain formula for non invertent transresistence amplifier
     gain = 1+(Rf/((double)R1));
     printf("gain : %lf\n", gain);
     // send data
-    commProtocolRoutine(0, fd);
-      sprintf(send, "%lf", gain);
-      writeSerial(fd, send); 
-      sprintf(send, "%lf", partition);
-      writeSerial(fd, send); 
+    protocolRoutine(0, fd);
+    sprintf(send, "%d", Rf);
+    writeSerial(fd, send); 
+    sprintf(send, "%d", R1);
+    writeSerial(fd, send); 
+    sprintf(send, "%d", partition);
+    writeSerial(fd, send); 
+  }
+  // retrieve gain and partition
+  if(argc == 1){
+    protocolRoutine(6, fd);
+    printf("%s", rec);
+    readSerial(fd,rec);
+    Rf = atoi(rec);
+    readSerial(fd,rec);
+    R1 = atoi(rec);
+    readSerial(fd,rec);
+    partition = atoi(rec);
+
+    gain = 1+(Rf/((double)R1));
+    printf("gain: %lf\n", gain);
+    printf("partition: %d\n", partition);
   }
   
   do{
@@ -87,7 +104,7 @@ int main(int argc, char *argv[]){
   scanf(" %c", &user_input);
   switch(user_input){
   case '1': 
-    commProtocolRoutine(1, fd);   
+    protocolRoutine(1, fd);   
     // Get timestamp to recover timings
     time_t rawtime;
     time(&rawtime);
@@ -125,7 +142,7 @@ int main(int argc, char *argv[]){
     } while(user_input != 'b');
     break;
   case '2':
-    commProtocolRoutine(2, fd);
+    protocolRoutine(2, fd);
     break;
   case '3':
     printf("Insert the sampling rate(s): ");
@@ -143,7 +160,7 @@ int main(int argc, char *argv[]){
       break; 
     }
     // start online mode
-    commProtocolRoutine(3, fd);
+    protocolRoutine(3, fd);
     // converts int to string to send sampling rate
     sprintf(send, "%d", sec_interval);
     writeSerial(fd, send);   
@@ -154,14 +171,14 @@ int main(int argc, char *argv[]){
       printf("\n%s", rec);
     } 
     // ends online mode
-    commProtocolRoutine(4, fd);
+    protocolRoutine(4, fd);
     break;
     case '4':
       printf("Insert the number of samples: ");
       int samples = 0;
       scanf("%d", &samples);
       // start fast sampling
-      commProtocolRoutine(5, fd);
+      protocolRoutine(5, fd);
       sprintf(send, "%d", samples);
       writeSerial(fd, send);
       recFastSamples(fd, samples);
@@ -181,7 +198,7 @@ int main(int argc, char *argv[]){
 
 
 
-void commProtocolRoutine(int mode, int fd){
+void protocolRoutine(int mode, int fd){
   switch(mode){
     case 0: 
       strcpy(send, "i");
@@ -201,6 +218,9 @@ void commProtocolRoutine(int mode, int fd){
     case 5:
       strcpy(send, "f");
       break;
+    case 6:
+      strcpy(send, "r");
+      break;
     default:
       strcpy(send, "?");
   }    
@@ -208,7 +228,7 @@ void commProtocolRoutine(int mode, int fd){
   // command is echoed 
   readSerial(fd,rec);
   // Enable for debug 
-  /* printf("avr\\%s", rec);  */
+  printf("avr\\%s", rec);
   // feedback message
   readSerial(fd,rec);
   printf("%s", rec);

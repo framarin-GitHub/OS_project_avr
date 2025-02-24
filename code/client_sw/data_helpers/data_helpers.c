@@ -4,6 +4,7 @@
 #include <errno.h>
 #include "./data_helpers.h"
 #include "../serial_communication/read_write_serial.h"
+#include "../globals.h"
 #define HANDLE_ERROR_ERRNO(msg) \
 	do{ \
 	errno = 11;\
@@ -11,19 +12,25 @@
 	exit(11); \
 	} while(0)
 
-char rec[1024];
+char recv[1024];
 
 extern int hour[60];
 extern int day[24];
 extern int month[30];
 extern int year[12];
 
-extern struct tm* timestamp;
+extern double gain;
+extern int partition;
 
-float ampereConversion(int value){
-  if (value == 0 || value == -1) return value;
-  // 1 is equal to 5mv==5mA
-  return ((float)value*5)/1000;
+extern struct tm* timestamp;
+const double CONVERSION_FACTOR = 204.8;
+
+double ampereConversion(int value){
+  if (value == 0 || value == -1) return (double)value;
+  double ret = (double)value/CONVERSION_FACTOR;
+  ret = ret/gain;
+  ret = (ret*100)/partition;
+  return ret;
 }
 
 void writeDataToFile(){
@@ -34,22 +41,22 @@ void writeDataToFile(){
   
   int m = timestamp->tm_min;
   for(int i = 0; i < 60; i++){
-    fprintf(f_h,"%d %f\n", m, ampereConversion(hour[i]));   
+    fprintf(f_h,"%d %lf\n", m, ampereConversion(hour[i]));   
     m--;
   }
   int h = timestamp->tm_hour; 
   for(int i = 0; i < 24; i++){
-    fprintf(f_d,"%d %f\n", h, ampereConversion(day[i]));
+    fprintf(f_d,"%d %lf\n", h, ampereConversion(day[i]));
     h--;
   }  
   int d = timestamp->tm_mday;
   for(int i = 0; i < 30; i++){
-    fprintf(f_m,"%d %f\n", d, ampereConversion(month[i]));
+    fprintf(f_m,"%d %lf\n", d, ampereConversion(month[i]));
     d--;
   }
   int mo = timestamp->tm_mon;
   for(int i = 0; i < 12; i++){
-    fprintf(f_y,"%d %f\n", mo+1, ampereConversion(year[i]));
+    fprintf(f_y,"%d %lf\n", mo+1, ampereConversion(year[i]));
     mo--;
   }
   
@@ -65,29 +72,28 @@ void recData(int fd){
   memset(month, -1, sizeof(int)*30);
   memset(year, -1, sizeof(int)*12);
   for(int i = 0; i < 60; i++){
-    readSerial(fd,rec);
-    int value = atoi(rec);
+    readSerial(fd,recv);
+    int value = atoi(recv);
     if(value == -1) break;
-    //conversion to milliAmpere is *5
-    hour[i] = 5*value;
+    hour[i] = value;
   }
   for(int i = 0; i < 24; i++){
-    readSerial(fd,rec);
-    int value = atoi(rec);
+    readSerial(fd,recv);
+    int value = atoi(recv);
     if(value == -1) break;
-    day[i] = 5*value;
+    day[i] = value;
   }
   for(int i = 0; i < 30; i++){
-    readSerial(fd,rec);
-    int value = atoi(rec);
+    readSerial(fd,recv);
+    int value = atoi(recv);
     if(value == -1) break;
-    month[i] = 5*value;
+    month[i] = value;
   }
   for(int i = 0; i < 12; i++){
-    readSerial(fd,rec);
-    int value = atoi(rec);
+    readSerial(fd,recv);
+    int value = atoi(recv);
     if(value == -1) break;
-    year[i] = 5*value;
+    year[i] = value;
   }
   writeDataToFile();
 }
@@ -96,11 +102,9 @@ void recFastSamples(int fd, int samples){
   FILE* f_s = fopen("./diagram_output/data/fast_sample.temp", "w+");
   int counter = 0;
   while(samples--){
-    readSerial(fd, rec);
-    int value = atoi(rec);
-    //conversion to milliAmpere is *5
-    value = 5*value;
-    fprintf(f_s,"%d %d\n", counter++, value);
+    readSerial(fd, recv);
+    int value = atoi(recv);
+    fprintf(f_s,"%d %lf\n", counter++, ampereConversion(value));
   }
   fclose(f_s);
 }

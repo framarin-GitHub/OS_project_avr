@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include "./alarm.h"
-
+#include "../globals.h"
 #define HANDLE_ERROR(msg,err) \
 	do{ \
 	perror(msg); \
