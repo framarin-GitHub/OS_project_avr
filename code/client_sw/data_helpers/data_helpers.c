@@ -25,9 +25,10 @@ extern int partition;
 extern struct tm* timestamp;
 const double CONVERSION_FACTOR = 204.8;
 
-double ampereConversion(int value){
+double milliampereConversion(int value){
   if (value == 0 || value == -1) return (double)value;
   double ret = (double)value/CONVERSION_FACTOR;
+  ret *= 1000;
   ret = ret/gain;
   ret = (ret*100)/partition;
   return ret;
@@ -41,22 +42,22 @@ void writeDataToFile(){
   
   int m = timestamp->tm_min;
   for(int i = 0; i < 60; i++){
-    fprintf(f_h,"%d %lf\n", m, ampereConversion(hour[i]));   
+    fprintf(f_h,"%d %lf\n", m, milliampereConversion(hour[i]));   
     m--;
   }
   int h = timestamp->tm_hour; 
   for(int i = 0; i < 24; i++){
-    fprintf(f_d,"%d %lf\n", h, ampereConversion(day[i]));
+    fprintf(f_d,"%d %lf\n", h, milliampereConversion(day[i]));
     h--;
   }  
   int d = timestamp->tm_mday;
   for(int i = 0; i < 30; i++){
-    fprintf(f_m,"%d %lf\n", d, ampereConversion(month[i]));
+    fprintf(f_m,"%d %lf\n", d, milliampereConversion(month[i]));
     d--;
   }
   int mo = timestamp->tm_mon;
   for(int i = 0; i < 12; i++){
-    fprintf(f_y,"%d %lf\n", mo+1, ampereConversion(year[i]));
+    fprintf(f_y,"%d %lf\n", mo+1, milliampereConversion(year[i]));
     mo--;
   }
   
@@ -104,7 +105,7 @@ void recFastSamples(int fd, int samples){
   while(samples--){
     readSerial(fd, recv);
     int value = atoi(recv);
-    fprintf(f_s,"%d %lf\n", counter++, ampereConversion(value));
+    fprintf(f_s,"%d %lf\n", counter++, milliampereConversion(value));
   }
   fclose(f_s);
 }

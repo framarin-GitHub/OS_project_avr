@@ -26,8 +26,8 @@ double value_read = -1;
 double value_max = -1;
 double value_acc = 0;
 
-double* value_arr;
-double* temp;
+int* value_arr;
+int* temp;
 
 int to_ins = -1;
 int sec_interval = 1;
@@ -70,12 +70,12 @@ int main(void){
     value_read = analogRead();
     value_max = (value_max>value_read)? value_max : value_read;
     if(fast_sample_mode){
-      *temp = value_read;
+      *temp = (int)value_read;
       temp++;
       samples_counter++;
       if(samples_counter == samples){
         for(samples_counter = 0; samples_counter < samples; samples_counter++){
-          sprintf((char*)buf, "%d\n", (int)value_arr[samples_counter]);
+          sprintf((char*)buf, "%d\n", value_arr[samples_counter]);
           UART_putString(buf);    
         }
         fast_sample_mode = 0;
@@ -162,7 +162,7 @@ int main(void){
           UART_getString(buf);
           samples = atoi((char*)buf);
           samples_counter = 0;
-          value_arr = (double*)malloc(sizeof(double)*samples);
+          value_arr = (int*)malloc(sizeof(int)*samples);
           temp = value_arr;
           fast_sample_mode = 1;
           break;

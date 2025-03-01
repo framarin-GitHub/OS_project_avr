@@ -8,7 +8,7 @@ void initGnuplot(int mode, FILE* gnuplot_pipe){
   //char* yrange = "set yrange [-1:1024]\n";
   char title[200]; 
   char xrange[200];
-  char* ylabel = "set ylabel \"current(milliAmpere)\" offset (0, 0, 0) rotate by -270 textcolor lt -1\n";
+  char* ylabel = "set ylabel \"inputCurrent(milliAmpere)\" offset (0, 0, 0) rotate by -270 textcolor lt -1\n";
   char* xlabel = "set xlabel \"values\" offset (0, 0, 0) rotate norotate textcolor lt -1\n";
   strcpy(title, "set title \"");
   strcpy(xrange, "set xrange ");

@@ -168,7 +168,8 @@ int main(int argc, char *argv[]){
     alarm(sec_alarm);
     while(alarm_flag){        
       readSerial(fd,rec);
-      printf("\n%s", rec);
+      int value = atoi(rec);
+      printf("\n%lf", milliampereConversion(value));
     } 
     // ends online mode
     protocolRoutine(4, fd);
